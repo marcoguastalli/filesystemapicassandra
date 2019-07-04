@@ -1,6 +1,5 @@
 package net.marco27.api.filesystemapi.store;
 
-import java.util.Iterator;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -16,7 +15,7 @@ import com.datastax.driver.core.Session;
 import net.marco27.api.filesystemapi.cassandra.CassandraServiceImpl;
 import net.marco27.api.filesystemapi.configuration.ApplicationConfiguration;
 import net.marco27.api.filesystemapi.domain.FileStructure;
-import net.marco27.api.filesystemapi.repository.FileStructureCrudRepository;
+import net.marco27.api.filesystemapi.repository.FileStructureCassandraRepository;
 
 @Service
 public class FileSystemApiStoreImpl extends CassandraServiceImpl implements FileSystemApiStore {
@@ -26,12 +25,12 @@ public class FileSystemApiStoreImpl extends CassandraServiceImpl implements File
     private static final String CQL_SELECT_BY_PATH = "SELECT * FROM file_structure WHERE path = '%s'";
 
     private ApplicationConfiguration applicationConfiguration;
-    private FileStructureCrudRepository fileStructureCrudRepository;
+    private FileStructureCassandraRepository fileStructureCrudRepository;
 
     public FileSystemApiStoreImpl(@Autowired final ApplicationConfiguration applicationConfiguration,
-            @Autowired final FileStructureCrudRepository fileStructureCrudRepository) {
+            @Autowired final FileStructureCassandraRepository fileStructureCassandraRepository) {
         this.applicationConfiguration = applicationConfiguration;
-        this.fileStructureCrudRepository = fileStructureCrudRepository;
+        this.fileStructureCrudRepository = fileStructureCassandraRepository;
     }
 
     @Override
@@ -57,8 +56,8 @@ public class FileSystemApiStoreImpl extends CassandraServiceImpl implements File
 
     @Override
     public FileStructure loadFileStructure(final String path) {
-        try (Cluster cluster = getCassandraCluster(applicationConfiguration.getCassandraAddresses())) {
-            try (Session session = getCassandraSession(cluster, applicationConfiguration.getCassandraKeyspace())) {
+        try (Cluster cluster = getCassandraCluster(this.applicationConfiguration.getCassandraAddresses())) {
+            try (Session session = getCassandraSession(cluster, this.applicationConfiguration.getCassandraKeyspace())) {
                 final String query = String.format(CQL_SELECT_BY_PATH, path);
                 ResultSet resultSet = session.execute(query);
                 for (final Row row : resultSet) {
