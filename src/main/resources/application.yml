@@ -1,0 +1,28 @@
+server.port: 8090
+
+# JPA
+spring.jpa.show-sql: true
+# Create and drop tables and sequences, loads import.sql
+#spring.jpa.hibernate.ddl-auto: create
+
+#cassandra -f
+spring.data.cassandra.port: 9042
+spring.data.cassandra.keyspace-name: filesystemapi
+spring.data.cassandra.contact-points: 127.0.0.1
+# spring.data.cassandra.schema-action: CREATE_IF_NOT_EXISTS
+
+# LOGGER
+#logging.pattern.console:%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n
+logging:
+  pattern:
+    console: "%msg%n"
+  level:
+    org.springframework.web: INFO
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql: DEBUG
+    net.marco27.api.filesystemapi: DEBUG
+app:
+  numberoOfThreads: 10
+  cassandraAddresses: localhost
+  cassandraKeyspace: filesystemapi
+
