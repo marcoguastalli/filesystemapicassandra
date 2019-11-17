@@ -52,9 +52,12 @@ http://localhost:8090/findFileStructureByPath/Users%2Fmarcoguastalli%2Ftemp
 ##### GET(!) saveFileStructure
 http://localhost:8090/saveFileStructure/Users%2Fmarco27%2Ftemp
 http://localhost:8090/saveFileStructure/Users%2Fmarcoguastalli%2Ftemp
+curl -X POST --header "Content-Type: application/json" --header "Accept: */*" "http://localhost:8090/saveFileStructure/Users%2Fmarco27%2Ftemp"
 
 ##### DELETE deleteFileStructure
 http://localhost:8090/deleteFileStructure/Users%2Fmarco27%2Ftemp
 http://localhost:8090/deleteFileStructure/Users%2Fmarcoguastalli%2Ftemp
-curl -X DELETE --header "Accept: */*" "http://localhost:8090/deleteFileStructure/Users%2Fmarcoguastalli%2Ftemp"
 curl -X DELETE --header "Accept: */*" "http://localhost:8090/deleteFileStructure/Users%2Fmarco27%2Ftemp"
+curl -X DELETE --header "Accept: */*" "http://localhost:8090/deleteFileStructure/Users%2Fmarcoguastalli%2Ftemp"
+
+{"path":"/Users/marco27/temp","name":"temp","ext":"","timestamp":"2019-11-17 20:51:40","children":[{"path":"/Users/marco27/temp/.DS_Store","name":".DS_Store","ext":"DS_Store","timestamp":"2019-11-17 11:10:42","children":null,"directory":false},{"path":"/Users/marco27/temp/opt.txt","name":"opt.txt","ext":"txt","timestamp":"2019-11-17 20:51:43","children":null,"directory":false}],"directory":true}

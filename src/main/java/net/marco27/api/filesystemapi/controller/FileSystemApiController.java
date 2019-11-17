@@ -84,7 +84,7 @@ public class FileSystemApiController {
         return ResponseEntity.ok(new JsonSuccess(String.format("path not found %s", path)));
     }
 
-    @GetMapping("/saveFileStructure/{path}")
+    @PostMapping("/saveFileStructure/{path}")
     public ResponseEntity<FileStructure> storeFileStructure(@Valid @PathVariable final String path) {
         final String validPath = validatePath(path);
         FileStructure fileStructure = fileSystemApiService.createFileStructure(validPath);
