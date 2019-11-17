@@ -1,15 +1,13 @@
 package net.marco27.api.filesystemapi.domain;
 
-import java.io.Serializable;
-import java.util.List;
-import java.util.Objects;
-
-import org.apache.commons.lang3.builder.ToStringBuilder;
+import lombok.Data;
 import org.springframework.data.cassandra.core.mapping.Column;
 import org.springframework.data.cassandra.core.mapping.PrimaryKey;
 import org.springframework.data.cassandra.core.mapping.Table;
 
-import lombok.Data;
+import java.io.Serializable;
+import java.util.List;
+import java.util.Objects;
 
 @Data
 @Table(value = "file_structure")
@@ -25,8 +23,8 @@ public final class FileStructure implements Serializable {
     private String timestamp;
     @Column
     private boolean isDirectory;
-    @Column
-    private List<FileStructure> children;
+    //@Column
+    //private List<FileStructure> children;
 
     private FileStructure() {
     }
@@ -37,31 +35,6 @@ public final class FileStructure implements Serializable {
         this.ext = builder.ext;
         this.timestamp = builder.timestamp;
         this.isDirectory = builder.isDirectory;
-        this.children = builder.children;
-    }
-
-    public String getPath() {
-        return path;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getExt() {
-        return ext;
-    }
-
-    public String getTimestamp() {
-        return timestamp;
-    }
-
-    public boolean isDirectory() {
-        return isDirectory;
-    }
-
-    public List<FileStructure> getChildren() {
-        return children;
     }
 
     public static class Builder {
@@ -113,18 +86,6 @@ public final class FileStructure implements Serializable {
     }
 
     @Override
-    public String toString() {
-        return new ToStringBuilder(this)
-                .append("path", path)
-                .append("name", name)
-                .append("ext", ext)
-                .append("timestamp", timestamp)
-                .append("isDirectory", isDirectory)
-                .append("children", children)
-                .toString();
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
@@ -134,15 +95,14 @@ public final class FileStructure implements Serializable {
         }
         FileStructure that = (FileStructure) o;
         return isDirectory == that.isDirectory &&
-                Objects.equals(path, that.path) &&
+                path.equals(that.path) &&
                 Objects.equals(name, that.name) &&
                 Objects.equals(ext, that.ext) &&
-                Objects.equals(timestamp, that.timestamp) &&
-                Objects.equals(children, that.children);
+                Objects.equals(timestamp, that.timestamp);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(path, name, ext, timestamp, isDirectory, children);
+        return Objects.hash(path, name, ext, timestamp, isDirectory);
     }
 }

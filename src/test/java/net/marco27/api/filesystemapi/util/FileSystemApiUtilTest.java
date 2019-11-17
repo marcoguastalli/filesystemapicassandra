@@ -13,7 +13,7 @@ import net.marco27.api.filesystemapi.domain.FileStructure;
 
 public class FileSystemApiUtilTest {
 
-    private static final String PATH = "/Users/marcoguastalli/temp";
+    private static final String PATH = "/Users/marco27/temp";
 
     @Test
     public void testListAndSortDirectoryFiles() {
