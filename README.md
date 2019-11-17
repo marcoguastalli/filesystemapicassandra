@@ -1,4 +1,4 @@
-# filesystemapi
+# filesystemapicassandra
 File System Spring Boot API - Cassandra
 
 # compile
