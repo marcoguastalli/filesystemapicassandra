@@ -6,13 +6,29 @@ mvn clean install
 mvn clean integration-test
 
 #run
+cassandra -f
 mvn clean spring-boot:run
 
 # swagger
 http://localhost:8090/swagger-ui.html
+Users/marco27/temp -> INVALID 1st Slash
 
-# oracle
-http://192.168.56.3:8080/apex/
+# Cassandra
+cqlsh localhost
+describe keyspaces;
+use filesystemapi;
+select * from file_structure;
+
+create table file_structure(
+   path text PRIMARY KEY,
+   name text,
+   ext text,
+   timestamp text,
+   isDirectory boolean
+
+);
+describe tables;
+drop table file_structure;
 
 ### play
 http://localhost:8090/

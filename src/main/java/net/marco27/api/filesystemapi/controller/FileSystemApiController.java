@@ -1,25 +1,27 @@
 package net.marco27.api.filesystemapi.controller;
 
-import static net.marco27.api.base.ApiConstants.SLASH;
-import static org.springframework.http.HttpStatus.CREATED;
-
-import javax.validation.Valid;
-
+import net.marco27.api.base.domain.JsonError;
+import net.marco27.api.base.domain.JsonSuccess;
+import net.marco27.api.filesystemapi.domain.FileStructure;
+import net.marco27.api.filesystemapi.domain.PathFileToPrint;
+import net.marco27.api.filesystemapi.repository.FileStructureCassandraRepository;
+import net.marco27.api.filesystemapi.service.FileSystemApiService;
+import net.marco27.api.filesystemapi.validation.model.ValidationResult;
+import net.marco27.api.filesystemapi.validation.service.ValidationService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import net.marco27.api.base.domain.JsonError;
-import net.marco27.api.base.domain.JsonSuccess;
-import net.marco27.api.filesystemapi.domain.FileStructure;
-import net.marco27.api.filesystemapi.domain.PathFileToPrint;
-import net.marco27.api.filesystemapi.service.FileSystemApiService;
-import net.marco27.api.filesystemapi.store.FileSystemApiStore;
-import net.marco27.api.filesystemapi.validation.model.ValidationResult;
-import net.marco27.api.filesystemapi.validation.service.ValidationService;
+import javax.validation.Valid;
+import java.util.Optional;
 
-/** The main use case for the API is to read the filesystem */
+import static net.marco27.api.base.ApiConstants.SLASH;
+import static org.springframework.http.HttpStatus.CREATED;
+
+/**
+ * The main use case for the API is to read the filesystem
+ */
 @RestController
 @RequestMapping
 public class FileSystemApiController {
@@ -29,11 +31,11 @@ public class FileSystemApiController {
     @Autowired
     private ValidationService validationService;
     @Autowired
-    private FileSystemApiStore fileSystemApiStore;
+    private FileStructureCassandraRepository fileStructureCassandraRepository;
 
     @GetMapping("/printPathToFile/{pathToPrint}/{fileToPrint}")
     public ResponseEntity<PathFileToPrint> printPathToFile(@Valid @PathVariable final String pathToPrint,
-            @Valid @PathVariable final String fileToPrint) {
+                                                           @Valid @PathVariable final String fileToPrint) {
         final PathFileToPrint pathFileToPrint = new PathFileToPrint.Builder(pathToPrint, fileToPrint).build();
         final ValidationResult validationResult = validationService.validateInput(pathFileToPrint);
         if (validationResult.isValid()) {
@@ -46,10 +48,12 @@ public class FileSystemApiController {
         }
     }
 
-    /** The input path parameter from a request cannot start with SLASH, but absolute paths are used
+    /**
+     * The input path parameter from a request cannot start with SLASH, but absolute paths are used
      *
      * @param path to validate
-     * @return a valid path */
+     * @return a valid path
+     */
     @Valid
     private String validatePath(@PathVariable @Valid final String path) {
         return StringUtils.startsWith(path, SLASH) ? path : SLASH.concat(path);
@@ -57,13 +61,13 @@ public class FileSystemApiController {
 
     @GetMapping("/findFileStructureById/{path}")
     public ResponseEntity<FileStructure> getFileStructure(@Valid @PathVariable final String path) {
-        final FileStructure result = fileSystemApiStore.findFileStructureById(validatePath(path));
-        return ResponseEntity.ok(result);
+        final Optional<FileStructure> result = fileStructureCassandraRepository.findById(validatePath(path));
+        return ResponseEntity.ok(result.get());
     }
 
     @GetMapping("/findFileStructureByPath/{path}")
     public ResponseEntity<FileStructure> findFileStructure(@Valid @PathVariable final String path) {
-        FileStructure result = fileSystemApiStore.findFileStructureByPath(validatePath(path));
+        FileStructure result = fileStructureCassandraRepository.findByPath(validatePath(path));
         if (result == null) {
             return ResponseEntity.noContent().build();
         }
@@ -72,9 +76,9 @@ public class FileSystemApiController {
 
     @DeleteMapping("/deleteFileStructure/{path}")
     public ResponseEntity<JsonSuccess> deleteFileStructure(@Valid @PathVariable final String path) {
-        FileStructure fileStructure = fileSystemApiStore.findFileStructureByPath(validatePath(path));
-        if (fileStructure != null) {
-            fileSystemApiStore.deleteFileStructure(fileStructure);
+        final Optional<FileStructure> result = fileStructureCassandraRepository.findById(validatePath(path));
+        if (result.isPresent()) {
+            fileStructureCassandraRepository.delete(result.get());
             return ResponseEntity.ok(new JsonSuccess());
         }
         return ResponseEntity.ok(new JsonSuccess(String.format("path not found %s", path)));
@@ -83,14 +87,11 @@ public class FileSystemApiController {
     @GetMapping("/saveFileStructure/{path}")
     public ResponseEntity<FileStructure> storeFileStructure(@Valid @PathVariable final String path) {
         final String validPath = validatePath(path);
-        FileStructure result = fileSystemApiStore.findFileStructureById(validatePath(validPath));
-        if (result == null) {
-            result = fileSystemApiService.createFileStructure(validPath);
-            if (result != null) {
-                result = fileSystemApiStore.saveFileStructure(result);
-            }
+        FileStructure fileStructure = fileSystemApiService.createFileStructure(validPath);
+        if (fileStructure != null) {
+            fileStructure = fileStructureCassandraRepository.save(fileStructure);
         }
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(fileStructure);
     }
 
 }
