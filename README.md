@@ -49,7 +49,7 @@ http://localhost:8090/findFileStructureById/Users%2Fmarcoguastalli%2Ftemp
 http://localhost:8090/findFileStructureByPath/Users%2Fmarco27%2Ftemp
 http://localhost:8090/findFileStructureByPath/Users%2Fmarcoguastalli%2Ftemp
 
-##### GET(!) saveFileStructure
+##### POST saveFileStructure
 http://localhost:8090/saveFileStructure/Users%2Fmarco27%2Ftemp
 http://localhost:8090/saveFileStructure/Users%2Fmarcoguastalli%2Ftemp
 curl -X POST --header "Content-Type: application/json" --header "Accept: */*" "http://localhost:8090/saveFileStructure/Users%2Fmarco27%2Ftemp"
